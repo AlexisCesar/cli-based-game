@@ -6,6 +6,12 @@ clearConsole = lambda: os.system('cls' if os.name=='nt' else 'clear')
 
 DEFAULT_MAP_SIZE = 20
 
+# Map Objects
+PLAYER = 'X'
+MONEY = '$'
+DOOR = '#'
+PASSABLE_OBJETCS = [' ', MONEY]
+
 def generate_map():
     map = list()
 
@@ -41,16 +47,22 @@ def generate_map():
     indexes = list(range(0, DEFAULT_MAP_SIZE))[4:-4]
 
     if door_direction == 'n':
-        map[0][random.choice(indexes)] = '#'
+        map[0][random.choice(indexes)] = DOOR
 
     elif door_direction == 's':
-        map[-1][random.choice(indexes)] = '#'
+        map[-1][random.choice(indexes)] = DOOR
 
     elif door_direction == 'e':
-        map[random.choice(indexes)][-1] = '#'
+        map[random.choice(indexes)][-1] = DOOR
 
     elif door_direction == 'w':
-        map[random.choice(indexes)][1] = '#'
+        map[random.choice(indexes)][1] = DOOR
+
+    # Drop random coins
+    for i in range(random.choice(list(range(2, 6)))):
+        random_row = random.choice(list(range(0, DEFAULT_MAP_SIZE))[3:-3])
+        random_column = random.choice(list(range(0, DEFAULT_MAP_SIZE))[3:-3])
+        map[random_row][random_column] = MONEY
 
     return map
 
@@ -68,7 +80,7 @@ game_map = generate_map()
 player_column = player_row = 0
 player_column = int(DEFAULT_MAP_SIZE / 2)
 player_row = (DEFAULT_MAP_SIZE - 2)
-game_map[player_row][player_column] = 'X'
+game_map[player_row][player_column] = PLAYER
 
 # Player status
 player_money = 0
@@ -80,7 +92,7 @@ current_room = 1
 
 def print_hud():
     print('-' * DEFAULT_MAP_SIZE)
-    print(f'${player_money}')
+    print(f'{MONEY}{player_money}')
     print(f'HP: {player_hp}')
     print(f'ATK: {player_atk}')
     print(f'ROOM: {current_room}')
@@ -109,52 +121,49 @@ def performMove(key):
     global current_room
 
     if key == 'w':
-        if game_map[(player_row - 1)][(player_column)] == ' ':
+        if game_map[(player_row - 1)][(player_column)] in PASSABLE_OBJETCS:
             game_map[player_row][player_column] = ' '
             player_row = player_row - 1
-            game_map[player_row][player_column] = 'X'
 
-        elif game_map[(player_row - 1)][(player_column)] == '#':
+        elif game_map[(player_row - 1)][(player_column)] == DOOR:
             game_map = generate_map()
             player_row = -2
-            game_map[player_row][player_column] = 'X'
             current_room = current_room + 1
 
     elif key == 'a':
-        if game_map[(player_row )][(player_column - 1)] == ' ':
+        if game_map[(player_row )][(player_column - 1)] in PASSABLE_OBJETCS:
             game_map[player_row][player_column] = ' '
             player_column = player_column - 1
-            game_map[player_row][player_column] = 'X'
 
-        elif game_map[(player_row )][(player_column - 1)] == '#':
+        elif game_map[(player_row )][(player_column - 1)] == DOOR:
             game_map = generate_map()
             player_column = -2
-            game_map[player_row][player_column] = 'X'
             current_room = current_room + 1
 
     elif key == 's':
-        if game_map[(player_row + 1)][(player_column)] == ' ':
+        if game_map[(player_row + 1)][(player_column)] in PASSABLE_OBJETCS:
             game_map[player_row][player_column] = ' '
             player_row = player_row + 1
-            game_map[player_row][player_column] = 'X'
 
-        elif game_map[(player_row + 1)][(player_column)] == '#':
+        elif game_map[(player_row + 1)][(player_column)] == DOOR:
             game_map = generate_map()
             player_row = 1
-            game_map[player_row][player_column] = 'X'
             current_room = current_room + 1
 
     elif key == 'd':
-        if game_map[(player_row )][(player_column + 1)] == ' ':
+        if game_map[(player_row )][(player_column + 1)] in PASSABLE_OBJETCS:
             game_map[player_row][player_column] = ' '
             player_column = player_column + 1
-            game_map[player_row][player_column] = 'X'
 
-        elif game_map[(player_row )][(player_column + 1)] == '#':
+        elif game_map[(player_row )][(player_column + 1)] == DOOR:
             game_map = generate_map()
             player_column = 2
-            game_map[player_row][player_column] = 'X'
             current_room = current_room + 1
+
+    if game_map[player_row][player_column] == MONEY:
+        player_money = player_money + 1
+
+    game_map[player_row][player_column] = PLAYER
 
     print_map(game_map)
     print_hud()
