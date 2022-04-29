@@ -1,3 +1,4 @@
+import random
 from pynput import keyboard
 import os
 
@@ -29,6 +30,28 @@ def generate_map():
         for index, column in enumerate(layer):
             if index == 1 or index == (DEFAULT_MAP_SIZE):
                 layer[index] = '|'
+    
+    map[0][1] = '/'
+    map[0][-1] = '\\'
+    map[-1][1] = '\\'
+    map[-1][-1] = '/'
+
+    # Generate random door
+    door_direction = random.choice(['n', 's', 'e', 'w'])
+    indexes = list(range(0, DEFAULT_MAP_SIZE))[4:-4]
+
+    if door_direction == 'n':
+        map[0][random.choice(indexes)] = '#'
+
+    elif door_direction == 's':
+        map[-1][random.choice(indexes)] = '#'
+
+    elif door_direction == 'e':
+        map[random.choice(indexes)][-1] = '#'
+
+    elif door_direction == 'w':
+        map[random.choice(indexes)][1] = '#'
+
     return map
 
 
