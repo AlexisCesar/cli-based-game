@@ -81,33 +81,58 @@ def on_press(key):
     except:
         k = key.name
     if k in ['w', 'a', 's', 'd']:
-        performMove(k, game_map)
+        performMove(k)
 
 
-def performMove(key, game_map):
+def performMove(key):
     global player_row
     global player_column
+    global game_map
 
     if key == 'w':
         if game_map[(player_row - 1)][(player_column)] == ' ':
             game_map[player_row][player_column] = ' '
             player_row = player_row - 1
             game_map[player_row][player_column] = 'X'
+
+        elif game_map[(player_row - 1)][(player_column)] == '#':
+            game_map = generate_map()
+            player_row = -2
+            game_map[player_row][player_column] = 'X'
+
     elif key == 'a':
         if game_map[(player_row )][(player_column - 1)] == ' ':
             game_map[player_row][player_column] = ' '
             player_column = player_column - 1
             game_map[player_row][player_column] = 'X'
+
+        elif game_map[(player_row )][(player_column - 1)] == '#':
+            game_map = generate_map()
+            player_column = -2
+            game_map[player_row][player_column] = 'X'
+
     elif key == 's':
         if game_map[(player_row + 1)][(player_column)] == ' ':
             game_map[player_row][player_column] = ' '
             player_row = player_row + 1
             game_map[player_row][player_column] = 'X'
+
+        elif game_map[(player_row + 1)][(player_column)] == '#':
+            game_map = generate_map()
+            player_row = 1
+            game_map[player_row][player_column] = 'X'
+
     elif key == 'd':
         if game_map[(player_row )][(player_column + 1)] == ' ':
             game_map[player_row][player_column] = ' '
             player_column = player_column + 1
             game_map[player_row][player_column] = 'X'
+
+        elif game_map[(player_row )][(player_column + 1)] == '#':
+            game_map = generate_map()
+            player_column = 2
+            game_map[player_row][player_column] = 'X'
+
     print_map(game_map)
 
 
