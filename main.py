@@ -67,6 +67,12 @@ def generate_map():
         random_column = random.choice(list(range(0, DEFAULT_MAP_SIZE))[3:-3])
         map[random_row][random_column] = MONEY
 
+    # Drop random life potions
+    for i in range(random.choice(list(range(0, 3)))):
+        random_row = random.choice(list(range(0, DEFAULT_MAP_SIZE))[3:-3])
+        random_column = random.choice(list(range(0, DEFAULT_MAP_SIZE))[3:-3])
+        map[random_row][random_column] = HP
+
     return map
 
 
@@ -123,6 +129,7 @@ def performMove(key):
     global game_map
     global player_money
     global current_room
+    global player_hp
 
     if key == 'w':
         if game_map[(player_row - 1)][(player_column)] in PASSABLE_OBJETCS:
@@ -166,6 +173,11 @@ def performMove(key):
 
     if game_map[player_row][player_column] == MONEY:
         player_money = player_money + 1
+    elif game_map[player_row][player_column] == HP:
+        if player_hp <= 95:
+            player_hp = player_hp + 5
+        else: 
+            player_hp = 100
 
     game_map[player_row][player_column] = PLAYER
 
