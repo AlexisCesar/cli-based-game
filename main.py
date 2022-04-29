@@ -7,10 +7,13 @@ clearConsole = lambda: os.system('cls' if os.name=='nt' else 'clear')
 DEFAULT_MAP_SIZE = 20
 
 # Map Objects
+WALL = '*'
 PLAYER = 'X'
+FLOOR = ' '
 MONEY = '$'
-DOOR = '#'
-PASSABLE_OBJETCS = [' ', MONEY]
+DOOR = '█'
+HP = '♥'
+PASSABLE_OBJETCS = [FLOOR, MONEY, HP]
 
 def generate_map():
     map = list()
@@ -23,7 +26,7 @@ def generate_map():
         id_counter = id_counter + 1
 
         for j in range(DEFAULT_MAP_SIZE):
-            layer.append(' ')
+            layer.append(FLOOR)
         map.append(layer)
 
     for layer in map:
@@ -31,11 +34,11 @@ def generate_map():
             layer_aux = list()
             layer_aux.append(layer[0])
             for i in range(DEFAULT_MAP_SIZE):
-                layer_aux.append('-')
+                layer_aux.append(WALL)
             map[map.index(layer)] = layer_aux
         for index, column in enumerate(layer):
             if index == 1 or index == (DEFAULT_MAP_SIZE):
-                layer[index] = '|'
+                layer[index] = WALL
     
     map[0][1] = '/'
     map[0][-1] = '\\'
@@ -91,12 +94,12 @@ player_atk = 10
 current_room = 1
 
 def print_hud():
-    print('-' * DEFAULT_MAP_SIZE)
-    print(f'{MONEY}{player_money}')
-    print(f'HP: {player_hp}')
+    print('█' * DEFAULT_MAP_SIZE)
+    print(f'{MONEY}: {player_money}')
+    print(f'{HP}: {player_hp}')
     print(f'ATK: {player_atk}')
     print(f'ROOM: {current_room}')
-    print('-' * DEFAULT_MAP_SIZE)
+    print('█' * DEFAULT_MAP_SIZE)
     
 
 def on_press(key):
@@ -111,6 +114,7 @@ def on_press(key):
 
 
 print_map(game_map)
+print()
 print_hud()
 
 def performMove(key):
@@ -122,7 +126,7 @@ def performMove(key):
 
     if key == 'w':
         if game_map[(player_row - 1)][(player_column)] in PASSABLE_OBJETCS:
-            game_map[player_row][player_column] = ' '
+            game_map[player_row][player_column] = FLOOR
             player_row = player_row - 1
 
         elif game_map[(player_row - 1)][(player_column)] == DOOR:
@@ -132,7 +136,7 @@ def performMove(key):
 
     elif key == 'a':
         if game_map[(player_row )][(player_column - 1)] in PASSABLE_OBJETCS:
-            game_map[player_row][player_column] = ' '
+            game_map[player_row][player_column] = FLOOR
             player_column = player_column - 1
 
         elif game_map[(player_row )][(player_column - 1)] == DOOR:
@@ -142,7 +146,7 @@ def performMove(key):
 
     elif key == 's':
         if game_map[(player_row + 1)][(player_column)] in PASSABLE_OBJETCS:
-            game_map[player_row][player_column] = ' '
+            game_map[player_row][player_column] = FLOOR
             player_row = player_row + 1
 
         elif game_map[(player_row + 1)][(player_column)] == DOOR:
@@ -152,7 +156,7 @@ def performMove(key):
 
     elif key == 'd':
         if game_map[(player_row )][(player_column + 1)] in PASSABLE_OBJETCS:
-            game_map[player_row][player_column] = ' '
+            game_map[player_row][player_column] = FLOOR
             player_column = player_column + 1
 
         elif game_map[(player_row )][(player_column + 1)] == DOOR:
@@ -166,6 +170,7 @@ def performMove(key):
     game_map[player_row][player_column] = PLAYER
 
     print_map(game_map)
+    print()
     print_hud()
 
 
