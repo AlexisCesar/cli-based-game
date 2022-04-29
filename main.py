@@ -70,8 +70,22 @@ player_column = int(DEFAULT_MAP_SIZE / 2)
 player_row = (DEFAULT_MAP_SIZE - 2)
 game_map[player_row][player_column] = 'X'
 
-print_map(game_map)
+# Player status
+player_money = 0
+player_hp = 100
+player_atk = 10
 
+# Game status
+current_room = 1
+
+def print_hud():
+    print('-' * DEFAULT_MAP_SIZE)
+    print(f'${player_money}')
+    print(f'HP: {player_hp}')
+    print(f'ATK: {player_atk}')
+    print(f'ROOM: {current_room}')
+    print('-' * DEFAULT_MAP_SIZE)
+    
 
 def on_press(key):
     if key == keyboard.Key.esc:
@@ -84,10 +98,15 @@ def on_press(key):
         performMove(k)
 
 
+print_map(game_map)
+print_hud()
+
 def performMove(key):
     global player_row
     global player_column
     global game_map
+    global player_money
+    global current_room
 
     if key == 'w':
         if game_map[(player_row - 1)][(player_column)] == ' ':
@@ -99,6 +118,7 @@ def performMove(key):
             game_map = generate_map()
             player_row = -2
             game_map[player_row][player_column] = 'X'
+            current_room = current_room + 1
 
     elif key == 'a':
         if game_map[(player_row )][(player_column - 1)] == ' ':
@@ -110,6 +130,7 @@ def performMove(key):
             game_map = generate_map()
             player_column = -2
             game_map[player_row][player_column] = 'X'
+            current_room = current_room + 1
 
     elif key == 's':
         if game_map[(player_row + 1)][(player_column)] == ' ':
@@ -121,6 +142,7 @@ def performMove(key):
             game_map = generate_map()
             player_row = 1
             game_map[player_row][player_column] = 'X'
+            current_room = current_room + 1
 
     elif key == 'd':
         if game_map[(player_row )][(player_column + 1)] == ' ':
@@ -132,8 +154,10 @@ def performMove(key):
             game_map = generate_map()
             player_column = 2
             game_map[player_row][player_column] = 'X'
+            current_room = current_room + 1
 
     print_map(game_map)
+    print_hud()
 
 
 with keyboard.Listener(on_press=on_press) as listener:
