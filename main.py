@@ -1,4 +1,7 @@
 from pynput import keyboard
+import os
+
+clearConsole = lambda: os.system('cls' if os.name=='nt' else 'clear')
 
 default_map_size = 20
 
@@ -28,7 +31,7 @@ for layer in map:
 
 
 def printMap():
-    print('\n' * 100)
+    clearConsole()
     for layer in map:
         for index, column in enumerate(layer[1:]):
             print(column, end=' ')
