@@ -125,7 +125,7 @@ def print_hud():
 
 def print_death():
     print('█' * DEFAULT_MAP_SIZE * 2)
-    print(f'{GRAVE} You died in the {current_room} room... {GRAVE}')
+    print(f'{GRAVE} You died in the #{current_room} room... {GRAVE}')
     print()
     print('Press enter and leave...')
     print('█' * DEFAULT_MAP_SIZE * 2)
@@ -157,6 +157,8 @@ def performMove(key):
     global player_hp
     global player_kills
 
+    entering_new_area = False
+
     if key == 'w':
         if game_map[(player_row - 1)][(player_column)] in PASSABLE_OBJETCS:
             game_map[player_row][player_column] = FLOOR
@@ -166,6 +168,7 @@ def performMove(key):
             game_map = generate_map()
             player_row = -2
             current_room = current_room + 1
+            entering_new_area = True
 
     elif key == 'a':
         if game_map[(player_row )][(player_column - 1)] in PASSABLE_OBJETCS:
@@ -176,6 +179,7 @@ def performMove(key):
             game_map = generate_map()
             player_column = -2
             current_room = current_room + 1
+            entering_new_area = True
 
     elif key == 's':
         if game_map[(player_row + 1)][(player_column)] in PASSABLE_OBJETCS:
@@ -186,6 +190,7 @@ def performMove(key):
             game_map = generate_map()
             player_row = 1
             current_room = current_room + 1
+            entering_new_area = True
 
     elif key == 'd':
         if game_map[(player_row )][(player_column + 1)] in PASSABLE_OBJETCS:
@@ -196,6 +201,7 @@ def performMove(key):
             game_map = generate_map()
             player_column = 2
             current_room = current_room + 1
+            entering_new_area = True
 
     if game_map[player_row][player_column] == MONEY:
         player_money = player_money + 1
@@ -204,7 +210,7 @@ def performMove(key):
             player_hp = player_hp + LIFE_POTION_HP
         else: 
             player_hp = PLAYER_MAX_HP
-    elif game_map[player_row][player_column] == ENEMY:
+    if game_map[player_row][player_column] == ENEMY and entering_new_area == False:
         player_hp = player_hp - ENEMY_DAMAGE
         if player_hp <= 0:
             print()
