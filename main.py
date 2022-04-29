@@ -1,10 +1,11 @@
-import random
 from pynput import keyboard
+import random
+import sys
 import os
 
 clearConsole = lambda: os.system('cls' if os.name=='nt' else 'clear')
 
-DEFAULT_MAP_SIZE = 20
+DEFAULT_MAP_SIZE = 10
 
 # Map Objects
 WALL = '*'
@@ -13,7 +14,22 @@ FLOOR = ' '
 MONEY = '$'
 DOOR = '█'
 HP = '♥'
-PASSABLE_OBJETCS = [FLOOR, MONEY, HP]
+ENEMY = '☻'
+GRAVE = '┼'
+PASSABLE_OBJETCS = [FLOOR, MONEY, HP, ENEMY]
+
+# Consts
+PLAYER_MAX_HP = 100
+LIFE_POTION_HP = 5
+ENEMY_DAMAGE = 10
+
+# Player status
+player_money = 0
+player_hp = PLAYER_MAX_HP
+player_kills = 0
+
+# Game status
+current_room = 1
 
 def generate_map():
     map = list()
@@ -61,16 +77,22 @@ def generate_map():
     elif door_direction == 'w':
         map[random.choice(indexes)][1] = DOOR
 
+    # Drop enemies
+    for i in range(random.choice(list(range(current_room, (current_room * 2))))):
+        random_row = random.choice(list(range(0, DEFAULT_MAP_SIZE))[1:-1])
+        random_column = random.choice(list(range(0, DEFAULT_MAP_SIZE))[2:])
+        map[random_row][random_column] = ENEMY
+    
     # Drop random coins
     for i in range(random.choice(list(range(2, 6)))):
-        random_row = random.choice(list(range(0, DEFAULT_MAP_SIZE))[3:-3])
-        random_column = random.choice(list(range(0, DEFAULT_MAP_SIZE))[3:-3])
+        random_row = random.choice(list(range(0, DEFAULT_MAP_SIZE))[1:-1])
+        random_column = random.choice(list(range(0, DEFAULT_MAP_SIZE))[2:])
         map[random_row][random_column] = MONEY
 
     # Drop random life potions
-    for i in range(random.choice(list(range(0, 3)))):
-        random_row = random.choice(list(range(0, DEFAULT_MAP_SIZE))[3:-3])
-        random_column = random.choice(list(range(0, DEFAULT_MAP_SIZE))[3:-3])
+    for i in range(random.choice(list(range(3, 6)))):
+        random_row = random.choice(list(range(0, DEFAULT_MAP_SIZE))[1:-1])
+        random_column = random.choice(list(range(0, DEFAULT_MAP_SIZE))[2:])
         map[random_row][random_column] = HP
 
     return map
@@ -91,22 +113,25 @@ player_column = int(DEFAULT_MAP_SIZE / 2)
 player_row = (DEFAULT_MAP_SIZE - 2)
 game_map[player_row][player_column] = PLAYER
 
-# Player status
-player_money = 0
-player_hp = 100
-player_atk = 10
-
-# Game status
-current_room = 1
 
 def print_hud():
-    print('█' * DEFAULT_MAP_SIZE)
+    print('█' * DEFAULT_MAP_SIZE * 2)
     print(f'{MONEY}: {player_money}')
     print(f'{HP}: {player_hp}')
-    print(f'ATK: {player_atk}')
     print(f'ROOM: {current_room}')
-    print('█' * DEFAULT_MAP_SIZE)
+    print(f'ENEMIES KILLED: {player_kills}')
+    print('█' * DEFAULT_MAP_SIZE * 2)
     
+
+def print_death():
+    print('█' * DEFAULT_MAP_SIZE * 2)
+    print(f'{GRAVE} You died in the {current_room} room... {GRAVE}')
+    print()
+    print('Press enter and leave...')
+    print('█' * DEFAULT_MAP_SIZE * 2)
+    input()
+    sys.exit(0)
+
 
 def on_press(key):
     if key == keyboard.Key.esc:
@@ -130,6 +155,7 @@ def performMove(key):
     global player_money
     global current_room
     global player_hp
+    global player_kills
 
     if key == 'w':
         if game_map[(player_row - 1)][(player_column)] in PASSABLE_OBJETCS:
@@ -174,10 +200,16 @@ def performMove(key):
     if game_map[player_row][player_column] == MONEY:
         player_money = player_money + 1
     elif game_map[player_row][player_column] == HP:
-        if player_hp <= 95:
-            player_hp = player_hp + 5
+        if player_hp <= (PLAYER_MAX_HP - LIFE_POTION_HP):
+            player_hp = player_hp + LIFE_POTION_HP
         else: 
-            player_hp = 100
+            player_hp = PLAYER_MAX_HP
+    elif game_map[player_row][player_column] == ENEMY:
+        player_hp = player_hp - ENEMY_DAMAGE
+        if player_hp <= 0:
+            print()
+            print_death()
+        player_kills = player_kills + 1
 
     game_map[player_row][player_column] = PLAYER
 
